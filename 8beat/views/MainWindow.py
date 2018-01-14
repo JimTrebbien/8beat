@@ -1,4 +1,6 @@
-
+import os
+import os.path
+from helpers.Config import Config
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
@@ -166,7 +168,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def changeThumbnail(self, stationId):
         print("changing for: " + stationId)
         try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size("cache/"+stationId, 92, 92)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), stationId), 92, 92)
             for station in self.newSearchStationsListStore:
                 if station[2] == stationId:
                     station[0] = pixbuf

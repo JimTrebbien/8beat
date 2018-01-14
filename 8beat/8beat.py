@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # coding=utf8
 import gi
-import sys
+from helpers.Config import Config
 from views.MainWindow import MainWindow
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
@@ -13,7 +13,9 @@ class EightBeat(Gtk.Application):
     # Main initialization routine
     def __init__(self, application_id, flags):
         Gtk.Application.__init__(self, application_id=application_id, flags=flags)
+        Config().startup()
         self.connect("activate", self.new_window)
+
 
 
     def new_window(self, *args):

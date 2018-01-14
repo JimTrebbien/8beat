@@ -1,4 +1,0 @@
-
-class Station():
-    pass
-

@@ -18,9 +18,6 @@ class MusicPlayer:
 
     def on_state_changed(self, bus, msg):
         old, new, pending = msg.parse_state_changed()
-        print("1: " + str(old))
-        print("2: " + str(new))
-        print("3: " + str(pending))
         if new == Gst.State.PLAYING:
             self.view.set_play_btn_image("media-playback-pause")
         elif new == Gst.State.PAUSED:
