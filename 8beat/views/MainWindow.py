@@ -166,7 +166,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.iconViewSpinner.stop()
 
     def changeThumbnail(self, stationId):
-        print("changing for: " + stationId)
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), stationId), 92, 92)
             for station in self.newSearchStationsListStore:
@@ -179,7 +178,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def selectStation(self, widget, index):
         pixbuf = None
         try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size("cache/" + self.newSearchStationsListStore[index][2], 64, 64)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  self.newSearchStationsListStore[index][2]), 64, 64)
         except:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64)
             print("no image for station: " + self.newSearchStationsListStore[index][2])
