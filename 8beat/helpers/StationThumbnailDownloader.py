@@ -5,17 +5,18 @@ from helpers.Config import Config
 
 class StationThumbnailDownloader:
 
-    def __init__(self, view, stationId):
+    def __init__(self, view, stationId, newSearch):
         self.cancellable = Gio.Cancellable()
         self.stationId = stationId
         self.view = view
+        self.newSearch = newSearch
 
     def on_ready_callback(self, source_object, result, user_data):
         try:
             success, content, etag = source_object.load_contents_finish(result)
             outputfile = open(os.path.join(Config().get_cache_folder(), self.stationId), "wb")
             outputfile.write(content)
-            self.view.changeThumbnail(self.stationId)
+            self.view.changeThumbnail(self.stationId, self.newSearch)
         except GLib.GError as e:
             print("Error: " + self.stationId + " " + e.message)
         #else:

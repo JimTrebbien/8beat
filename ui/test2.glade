@@ -31,6 +31,30 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="savedStationsListStore">
+    <columns>
+      <!-- column-name Favicon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name Name -->
+      <column type="gchararray"/>
+      <!-- column-name Id -->
+      <column type="gchararray"/>
+      <!-- column-name StreamURL -->
+      <column type="gchararray"/>
+      <!-- column-name HomepageURL -->
+      <column type="gchararray"/>
+      <!-- column-name FaviconURL -->
+      <column type="gchararray"/>
+      <!-- column-name Country -->
+      <column type="gchararray"/>
+      <!-- column-name Tags -->
+      <column type="gchararray"/>
+      <!-- column-name Votes -->
+      <column type="gchararray"/>
+      <!-- column-name Codec -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkApplicationWindow" id="mainWindow">
     <property name="width_request">900</property>
     <property name="height_request">600</property>
@@ -399,11 +423,14 @@
                         <property name="can_focus">True</property>
                         <property name="shadow_type">in</property>
                         <child>
-                          <object class="GtkIconView">
+                          <object class="GtkIconView" id="savedStationsIconView">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="margin">6</property>
-                            <property name="model">newSearchStationsListStore</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="model">savedStationsListStore</property>
+                            <property name="item_width">92</property>
                           </object>
                         </child>
                       </object>
@@ -698,25 +725,34 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton">
+              <object class="GtkButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="margin_left">5</property>
+                <property name="margin_right">5</property>
+                <property name="margin_top">5</property>
+                <property name="margin_bottom">5</property>
+                <property name="hexpand">False</property>
+                <property name="vexpand">False</property>
                 <property name="relief">none</property>
+                <signal name="clicked" handler="add_saved_station" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="stock">gtk-missing-image</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="stock">gtk-add</property>
                   </object>
                 </child>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="padding">10</property>
-                <property name="pack_type">end</property>
-                <property name="position">4</property>
+                <property name="fill">False</property>
+                <property name="position">5</property>
               </packing>
             </child>
           </object>
@@ -773,5 +809,4 @@
       </packing>
     </child>
   </object>
-  <object class="GtkListStore" id="savedStationsListStore"/>
 </interface>

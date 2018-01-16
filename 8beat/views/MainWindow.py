@@ -1,4 +1,5 @@
 import os
+import json
 import os.path
 from helpers.Config import Config
 import gi
@@ -71,7 +72,7 @@ class MainWindow(Gtk.ApplicationWindow):
             print("Error reading GUI file")
             raise
 
-        self.scheduler = sched.scheduler(time.time, time.sleep)
+        #self.scheduler = sched.scheduler(time.time, time.sleep)
 
         # Fire up the main window
         self.MainWindow = builder.get_object("mainWindow")
@@ -89,6 +90,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.notificationBarFrame = builder.get_object("notificationBarFrame")
 
         self.newSearchStationsListStore = builder.get_object("newSearchStationsListStore")
+        self.savedStationsListStore = builder.get_object("savedStationsListStore")
         self.activeStationPlayBarThumbnail = builder.get_object("activeStationPlayBarThumbnail")
         self.activeStationName = builder.get_object("activeStationPlayBarThumbnail")
         self.activeStationSong = builder.get_object("activeStationPlayBarThumbnail")
@@ -112,9 +114,18 @@ class MainWindow(Gtk.ApplicationWindow):
         self.newSearchIconView.set_pixbuf_column(0)
         self.newSearchIconView.set_text_column(1)
 
+        self.savedStationsIconView = builder.get_object("savedStationsIconView")
+        self.savedStationsIconView.set_pixbuf_column(0)
+        self.savedStationsIconView.set_text_column(1)
+
+
+
         self.MainWindow.show()
 
-        self.scheduler.run()
+        self.test()
+
+        #self.scheduler.run()
+
 
     def close(self, *args):
         self.MainWindow.destroy()
@@ -162,13 +173,19 @@ class MainWindow(Gtk.ApplicationWindow):
 
         print("der er " + str(len(self.newSearchStationsListStore)) + " stationer i liststore")
         for icon in self.newSearchStationsListStore:
-            StationThumbnailDownloader(self, icon[2]).go(icon[5])
+            StationThumbnailDownloader(self, icon[2], True).go(icon[5])
         self.iconViewSpinner.stop()
 
-    def changeThumbnail(self, stationId):
+    def changeThumbnail(self, stationId, newSearch):
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), stationId), 92, 92)
-            for station in self.newSearchStationsListStore:
+
+            if newSearch:
+                listStore = self.newSearchStationsListStore
+            else:
+                listStore = self.savedStationsListStore
+
+            for station in listStore:
                 if station[2] == stationId:
                     station[0] = pixbuf
 
@@ -193,6 +210,25 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def set_current_station_song(self, songName):
         self.lblStationSong.set_label(songName)
+
+    def add_saved_station(self, widget):
+        id = self.musicPlayer.get_playing_station_id()
+        for i in range(len(self.newSearchStationsListStore)):
+        #for i, station in self.newSearchStationsListStore:
+            station = self.newSearchStationsListStore[i]
+            if station[2] == str(id):
+                name = station[1]
+                sid = station[2]
+                web = station[4]
+                url = station[3]
+                country = station[6]
+                tags = station[7]
+                votes = station[8]
+                codec = station[9]
+                favicon = station[5]
+                Config().add_saved_station(sid, name, url, web, country, favicon, tags, votes, codec)
+
+                break
 
     def fill_detailswindow(self, station):
         #pixbuf, name, id, url, web, favicon, country, tags, votes, codec
@@ -224,3 +260,41 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def set_play_btn_image(self, img):
         self.playBtnImage.set_from_icon_name(img, 1)
+
+
+
+
+    def test(self):
+        content = Config().get_saved_stations()
+        #js = content[0].decode("utf-8")
+        #data = json.loads(js)
+        for station in content:
+            data = json.loads(str(station).replace("\'", "\""))
+            id = data['id']
+            name = data['name']
+            url = data['url']
+            favicon = data['favicon']
+            web = data['homepage']
+            country = data['country']
+            tags = data['tags']
+            votes = data['votes']
+            codec = data['codec']
+            width = 92  #should be set in settings
+            height = 92 #should be set in settings
+
+            try:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', width, height)
+            except:
+                self.showNotification("Error loading failsafe image!")
+
+            try:
+                self.savedStationsListStore.append([pixbuf, name, id, url, web, favicon, country, tags, votes, codec])
+                print("added: " + name)
+            except:
+                print("den virkede ikke")
+
+        print("der er " + str(len(self.savedStationsListStore)) + " stationer i liststore")
+        for icon in self.savedStationsListStore:
+            StationThumbnailDownloader(self, icon[2], False).go(icon[5])
+            #self.changeThumbnail(id, False)
+        self.iconViewSpinner.stop()
