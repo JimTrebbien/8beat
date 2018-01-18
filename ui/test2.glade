@@ -408,7 +408,7 @@
                             <property name="model">newSearchStationsListStore</property>
                             <property name="item_width">92</property>
                             <property name="reorderable">True</property>
-                            <signal name="item-activated" handler="selectStation" swapped="no"/>
+                            <signal name="item-activated" handler="selectStation" object="newSearchStationsListStore" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -431,6 +431,7 @@
                             <property name="vexpand">True</property>
                             <property name="model">savedStationsListStore</property>
                             <property name="item_width">92</property>
+                            <signal name="item-activated" handler="selectStation" object="savedStationsListStore" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -593,23 +594,42 @@
                 <property name="halign">start</property>
                 <property name="valign">center</property>
                 <property name="orientation">vertical</property>
-                <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel" id="lblSongName">
+                  <object class="GtkOverlay">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="single_line_mode">True</property>
-                    <property name="max_width_chars">32</property>
-                    <attributes>
-                      <attribute name="gravity" value="west"/>
-                      <attribute name="gravity-hint" value="strong"/>
-                    </attributes>
+                    <child>
+                      <object class="GtkLabel" id="lblSongName">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="single_line_mode">True</property>
+                        <property name="max_width_chars">32</property>
+                        <attributes>
+                          <attribute name="gravity" value="west"/>
+                          <attribute name="gravity-hint" value="strong"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="index">-1</property>
+                      </packing>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkSpinner" id="songNameLoadingSpinner">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                      </object>
+                      <packing>
+                        <property name="pass_through">True</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="position">-1</property>
                   </packing>
                 </child>
                 <child>
@@ -628,7 +648,8 @@
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="pack_type">end</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -637,6 +658,39 @@
                 <property name="fill">False</property>
                 <property name="padding">10</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
+                <property name="receives_default">True</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="margin_right">5</property>
+                <property name="margin_top">5</property>
+                <property name="margin_bottom">5</property>
+                <property name="hexpand">False</property>
+                <property name="vexpand">False</property>
+                <property name="relief">none</property>
+                <signal name="clicked" handler="add_saved_station" swapped="no"/>
+                <signal name="clicked" handler="check_if_saved" swapped="no"/>
+                <signal name="clicked" handler="test" swapped="no"/>
+                <child>
+                  <object class="GtkImage" id="imgSavedStationIcon">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="icon_name">list-add</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -664,7 +718,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">40</property>
-                <property name="position">2</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
@@ -675,7 +729,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">3</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child>
@@ -721,37 +775,6 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
-                <property name="position">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="margin_left">5</property>
-                <property name="margin_right">5</property>
-                <property name="margin_top">5</property>
-                <property name="margin_bottom">5</property>
-                <property name="hexpand">False</property>
-                <property name="vexpand">False</property>
-                <property name="relief">none</property>
-                <signal name="clicked" handler="add_saved_station" swapped="no"/>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <property name="stock">gtk-add</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
                 <property name="position">5</property>
               </packing>
             </child>
