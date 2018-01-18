@@ -51,9 +51,11 @@ class MusicPlayer:
 
                     # self.mainWin.lblStationName.set_label(station)
                     # self.mainWin.lblStationName.set_markup("<a href=\"http://www.gtk.org\" " "title=\"Our website\">"+station+"</a>")
-                    self.view.lblSongName.set_tooltip_text(title)
+                    #self.view.lblSongName.set_tooltip_text(title)
+                    tooltip = title
                     shortTitle = (title[:32] + '..') if len(title) > 32 else title
-                    self.view.lblSongName.set_label(shortTitle)
+                    #self.view.lblSongName.set_label(shortTitle)
+                    self.view.set_current_station_song(shortTitle, tooltip)
 
     def play(self, uri, stationId):
         self.player.set_state(Gst.State.NULL)
