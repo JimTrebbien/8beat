@@ -105,6 +105,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.volumeScaler = builder.get_object("volumeScaler")
         self.btnPlay = builder.get_object("btnPlay")
         self.playBtnImage = builder.get_object("playBtnImage")
+        self.songNameLoadingSpinner = builder.get_object("songNameLoadingSpinner")
+        self.imgSavedStationIcon = builder.get_object("imgSavedStationIcon")
 
         self.volumeScaler.set_value(50)
         self.volume_change(None, None, self.volumeScaler.get_value())
@@ -118,11 +120,12 @@ class MainWindow(Gtk.ApplicationWindow):
         self.savedStationsIconView.set_pixbuf_column(0)
         self.savedStationsIconView.set_text_column(1)
 
-
+        self.activeStationPlayBarThumbnail.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64))
+        self.imgStationDetailsImage.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64))
 
         self.MainWindow.show()
 
-        self.test()
+        self.test(None)
 
         #self.scheduler.run()
 
@@ -137,6 +140,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def onStationSearch(self, widget):
         self.iconViewSpinner.start()
         StationRequester(self).request_by_name(widget.get_text())
+
         #self.showNotification("If we shouldn't eat at night, why is there a light in the fridge?")
 
     def hideNotificationBar(self, widget):
@@ -192,46 +196,59 @@ class MainWindow(Gtk.ApplicationWindow):
         except:
             self.showNotification("Error loading real image!")
 
-    def selectStation(self, widget, index):
+
+    def selectStation(self, liststore, index):
         pixbuf = None
         try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  self.newSearchStationsListStore[index][2]), 64, 64)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  liststore[index][2]), 64, 64)
+            self.imgStationDetailsImage.set_from_pixbuf(pixbuf)
         except:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64)
-            print("no image for station: " + self.newSearchStationsListStore[index][2])
+            print("no image for station: " + liststore[index][2])
 
         self.activeStationPlayBarThumbnail.set_from_pixbuf(pixbuf)
-        self.fill_detailswindow(self.newSearchStationsListStore[index])
-        self.musicPlayer.play(self.newSearchStationsListStore[index][3], self.newSearchStationsListStore[index][2])
-        self.set_current_station_name(self.newSearchStationsListStore[index][1]);
+        self.lblSongName.set_label("")
+        self.songNameLoadingSpinner.start()
+
+        self.fill_detailswindow(liststore[index])
+        self.musicPlayer.play(liststore[index][3], liststore[index][2])
+        self.set_current_station_name(liststore[index][1])
+        self.check_if_saved(None)
 
     def set_current_station_name(self, name):
         self.lblStationName.set_label(name)
 
-    def set_current_station_song(self, songName):
-        self.lblStationSong.set_label(songName)
+    def set_current_station_song(self, songName, longName):
+        self.songNameLoadingSpinner.stop()
+        self.lblSongName.set_label(songName)
+        self.lblSongName.set_tooltip_text(longName)
 
+    #this needs to be rewritten
+    #if a station in "saved" is unsaved and then saved, this looks for the station in the "all" liststore where it might not be
     def add_saved_station(self, widget):
         id = self.musicPlayer.get_playing_station_id()
-        for i in range(len(self.newSearchStationsListStore)):
-        #for i, station in self.newSearchStationsListStore:
-            station = self.newSearchStationsListStore[i]
-            if station[2] == str(id):
-                name = station[1]
-                sid = station[2]
-                web = station[4]
-                url = station[3]
-                country = station[6]
-                tags = station[7]
-                votes = station[8]
-                codec = station[9]
-                favicon = station[5]
-                Config().add_saved_station(sid, name, url, web, country, favicon, tags, votes, codec)
+        if Config().is_station_saved(id):
+            Config().remove_station(id)
+        else:
+            for i in range(len(self.newSearchStationsListStore)):
+                station = self.newSearchStationsListStore[i]
+                if station[2] == str(id):
+                    name = station[1]
+                    sid = station[2]
+                    web = station[4]
+                    url = station[3]
+                    country = station[6]
+                    tags = station[7]
+                    votes = station[8]
+                    codec = station[9]
+                    favicon = station[5]
+                    Config().add_saved_station(sid, name, url, web, country, favicon, tags, votes, codec)
+                    break
 
-                break
 
     def fill_detailswindow(self, station):
         #pixbuf, name, id, url, web, favicon, country, tags, votes, codec
+        #self.imgStationDetailsImage.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  station[2]), 64, 64))
         self.lblDetailsStationName.set_label(station[1])
         self.lblDetailsStationTags.set_label(station[7].replace(",", ", "))
         self.imgStationDetailsImage.set_from_pixbuf(self.get_local_thumbnail(station[2], 128, 128))
@@ -242,7 +259,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def get_local_thumbnail(self, stationId, width, height):
         pixbuf = None
         try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size("cache/" + stationId, width, height)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  stationId), width, height)
         except:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', width, height)
         return pixbuf
@@ -263,8 +280,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
 
 
-
-    def test(self):
+    #this should not be called test...
+    def test(self, widget):
+        self.savedStationsListStore.clear()
         content = Config().get_saved_stations()
         #js = content[0].decode("utf-8")
         #data = json.loads(js)
@@ -298,3 +316,11 @@ class MainWindow(Gtk.ApplicationWindow):
             StationThumbnailDownloader(self, icon[2], False).go(icon[5])
             #self.changeThumbnail(id, False)
         self.iconViewSpinner.stop()
+
+
+    def check_if_saved(self, widget):
+        stationId = self.musicPlayer.get_playing_station_id()
+        if Config().is_station_saved(stationId):
+            self.imgSavedStationIcon.set_from_icon_name("gtk-apply", 1)
+        else:
+            self.imgSavedStationIcon.set_from_icon_name("list-add", 1)
