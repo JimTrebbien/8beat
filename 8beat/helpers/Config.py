@@ -62,3 +62,7 @@ class Config:
     def is_station_saved(self, stationId):
         ft = Query()
         return self.stationsDatabase.contains(ft.id == stationId)
+
+    def remove_station(self, stationId):
+        ft = Query()
+        return self.stationsDatabase.remove(ft.id == stationId)
