@@ -18,7 +18,8 @@ class StationThumbnailDownloader:
             outputfile.write(content)
             self.view.changeThumbnail(self.stationId, self.newSearch)
         except GLib.GError as e:
-            print("Error: " + self.stationId + " " + e.message)
+            pass
+            #print("Error: " + self.stationId + " " + e.message)
         #else:
             #content_text = content[:100].decode("utf-8")
             #self.append_text("Got content: " + content_text + "...")
