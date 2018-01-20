@@ -32,7 +32,6 @@ class Config:
         self.stationsDatabase = TinyDB(os.path.join(self.settingsFolder, 'stations.json'))
 
     def first_run(self):
-        print("first run")
         os.mkdir(self.settingsFolder)    #making the settingsfolder
         os.mkdir(os.path.join(self.settingsFolder, "cache"))    #making the folder for the cached thumbnails
         self.create_config()
