@@ -386,13 +386,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkStack" id="stack1">
+                  <object class="GtkStack" id="viewStack">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
+                    <property name="transition_type">crossfade</property>
                     <child>
-                      <object class="GtkScrolledWindow">
+                      <object class="GtkScrolledWindow" id="stackFirstPage">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
@@ -676,7 +677,7 @@
                 <property name="relief">none</property>
                 <signal name="clicked" handler="add_saved_station" swapped="no"/>
                 <signal name="clicked" handler="check_if_saved" swapped="no"/>
-                <signal name="clicked" handler="test" swapped="no"/>
+                <signal name="clicked" handler="fill_saved_station_list" swapped="no"/>
                 <child>
                   <object class="GtkImage" id="imgSavedStationIcon">
                     <property name="visible">True</property>
@@ -811,7 +812,7 @@
       <object class="GtkStackSwitcher">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="stack">stack1</property>
+        <property name="stack">viewStack</property>
       </object>
       <packing>
         <property name="position">1</property>
