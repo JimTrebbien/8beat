@@ -21,8 +21,27 @@ class StationRequester:
         finally:
             self.cancellable.reset()
 
-    def request_by_name(self, name):
+    def request_by_name(self, name, limit):
         url = "http://www.radio-browser.info/webservice/json/stations/search?name={}".format(
-            urllib.parse.quote_plus(name))
+            urllib.parse.quote_plus(name)+"&limit="+str(limit))
+
         file_ = Gio.File.new_for_uri(url)
         file_.load_contents_async(self.cancellable, self.on_ready_callback, None)
+
+
+    def on_request_by_id_callback(self, source_object, result, user_data):
+        try:
+            success, content, etag = source_object.load_contents_finish(result)
+            js = content.decode("utf-8")
+            data = json.loads(js)
+            self.view.save_new_station(data)
+        except GLib.GError as e:
+            print("Error: " + e.message)
+        finally:
+            self.cancellable.reset()
+
+
+    def request_by_id(self, stationId):
+        url = "http://www.radio-browser.info/webservice/json/stations/byid/"+stationId
+        file_ = Gio.File.new_for_uri(url)
+        file_.load_contents_async(self.cancellable, self.on_request_by_id_callback, None)
