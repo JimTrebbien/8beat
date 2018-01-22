@@ -45,3 +45,19 @@ class StationRequester:
         url = "http://www.radio-browser.info/webservice/json/stations/byid/"+stationId
         file_ = Gio.File.new_for_uri(url)
         file_.load_contents_async(self.cancellable, self.on_request_by_id_callback, None)
+
+
+    def request_by_votes(self, limit):
+        url = "http://www.radio-browser.info/webservice/json/stations/topvote/"+str(limit)
+        file_ = Gio.File.new_for_uri(url)
+        file_.load_contents_async(self.cancellable, self.on_ready_callback, None)
+
+    def request_by_clicks(self, limit):
+        url = "http://www.radio-browser.info/webservice/json/stations/topclick/"+str(limit)
+        file_ = Gio.File.new_for_uri(url)
+        file_.load_contents_async(self.cancellable, self.on_ready_callback, None)
+
+    def request_recently_clicked(self, limit):
+        url = "http://www.radio-browser.info/webservice/json/stations/lastclick/"+str(limit)
+        file_ = Gio.File.new_for_uri(url)
+        file_.load_contents_async(self.cancellable, self.on_ready_callback, None)
