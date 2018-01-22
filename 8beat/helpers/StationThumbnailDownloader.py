@@ -11,6 +11,7 @@ class StationThumbnailDownloader:
         self.view = view
         self.newSearch = newSearch
 
+
     def on_ready_callback(self, source_object, result, user_data):
         try:
             success, content, etag = source_object.load_contents_finish(result)

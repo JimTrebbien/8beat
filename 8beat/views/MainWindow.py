@@ -13,51 +13,6 @@ from helpers.StationThumbnailDownloader import StationThumbnailDownloader
 from helpers.MusicPlayer import MusicPlayer
 
 
-# This needs to go!
-MENU_XML="""
-<?xml version="1.0" encoding="UTF-8"?>
-<interface>
-  <menu id="app-menu">
-    <section>
-      <attribute name="label" translatable="yes">Change label</attribute>
-      <item>
-        <attribute name="action">win.change_label</attribute>
-        <attribute name="target">String 1</attribute>
-        <attribute name="label" translatable="yes">String 1</attribute>
-      </item>
-      <item>
-        <attribute name="action">win.change_label</attribute>
-        <attribute name="target">String 2</attribute>
-        <attribute name="label" translatable="yes">String 2</attribute>
-      </item>
-      <item>
-        <attribute name="action">win.change_label</attribute>
-        <attribute name="target">String 3</attribute>
-        <attribute name="label" translatable="yes">String 3</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
-        <attribute name="action">win.maximize</attribute>
-        <attribute name="label" translatable="yes">Maximize</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
-        <attribute name="action">app.about</attribute>
-        <attribute name="label" translatable="yes">_About</attribute>
-      </item>
-      <item>
-        <attribute name="action">app.quit</attribute>
-        <attribute name="label" translatable="yes">_Quit</attribute>
-        <attribute name="accel">&lt;Primary&gt;q</attribute>
-    </item>
-    </section>
-  </menu>
-</interface>
-"""
-
-
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, application):
         self.Application = application
@@ -77,12 +32,14 @@ class MainWindow(Gtk.ApplicationWindow):
         # Fire up the main window
         self.MainWindow = builder.get_object("mainWindow")
         self.MainWindow.set_application(application)
+        self.Application.set_title = "8 Beat Radio"
+
         self.revealer = builder.get_object("stationDetailsRevealer")
         self.headerBar = builder.get_object("mainHeaderBar")
         self.headerBar.set_show_close_button(True)
         self.MainWindow.set_titlebar(self.headerBar)
-        menubuilder = Gtk.Builder.new_from_string(MENU_XML, -1)
-        self.Application.set_app_menu(menubuilder.get_object("app-menu"))
+        #menubuilder = Gtk.Builder.new_from_string(MENU_XML, -1)
+        #self.Application.set_app_menu(menubuilder.get_object("app-menu"))
 
         self.lblNotificationMessage = builder.get_object("lblNotificationMessage")
         self.iconViewSpinner = builder.get_object("iconViewSpinner")
@@ -113,7 +70,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.volumeScaler.set_value(50)
         self.volume_change(None, None, self.volumeScaler.get_value())
 
-
         self.newSearchIconView = builder.get_object("newSearchIconView")
         self.newSearchIconView.set_pixbuf_column(0)
         self.newSearchIconView.set_text_column(1)
@@ -122,15 +78,15 @@ class MainWindow(Gtk.ApplicationWindow):
         self.savedStationsIconView.set_pixbuf_column(0)
         self.savedStationsIconView.set_text_column(1)
 
-        self.activeStationPlayBarThumbnail.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64))
-        self.imgStationDetailsImage.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64))
+        self.activeStationPlayBarThumbnail.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', 64, 64))
+        self.imgStationDetailsImage.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', 128, 128))
 
         self.MainWindow.show()
 
         self.fill_saved_station_list(None)
+        StationRequester(self).request_recently_clicked(20)
 
         #self.scheduler.run()
-
 
     def close(self, *args):
         self.MainWindow.destroy()
@@ -143,7 +99,6 @@ class MainWindow(Gtk.ApplicationWindow):
         self.iconViewSpinner.start()
         StationRequester(self).request_by_name(widget.get_text(), 100)
         self.viewStack.set_visible_child(self.stackFirstPage)
-
         #self.showNotification("If we shouldn't eat at night, why is there a light in the fridge?")
 
     def hideNotificationBar(self, widget):
@@ -169,7 +124,7 @@ class MainWindow(Gtk.ApplicationWindow):
             width = 92  #should be set in settings
             height = 92 #should be set in settings
             try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', width, height)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
             except:
                 self.showNotification("Error loading failsafe image!")
 
@@ -207,7 +162,7 @@ class MainWindow(Gtk.ApplicationWindow):
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  liststore[index][2]), 64, 64)
             self.imgStationDetailsImage.set_from_pixbuf(pixbuf)
         except:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', 64, 64)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', 64, 64)
             #print("no image for station: " + liststore[index][2])
 
         self.activeStationPlayBarThumbnail.set_from_pixbuf(pixbuf)
@@ -246,10 +201,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def add_saved_station(self, widget):
         id = self.musicPlayer.get_playing_station_id()
-        if Config().is_station_saved(id):
-            Config().remove_station(id)
-        else:
-            StationRequester(self).request_by_id(id)
+        if id != 0:
+            if Config().is_station_saved(id):
+                Config().remove_station(id)
+            else:
+                StationRequester(self).request_by_id(id)
 
 
     def fill_detailswindow(self, station):
@@ -267,7 +223,7 @@ class MainWindow(Gtk.ApplicationWindow):
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(),  stationId), width, height)
         except:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', width, height)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
         return pixbuf
 
     def volume_change(self, arg1, arg2, arg3):
@@ -308,7 +264,7 @@ class MainWindow(Gtk.ApplicationWindow):
             height = 92 #should be set in settings
 
             try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/audio_wave.png', width, height)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
             except:
                 pass
                 #self.showNotification("Error loading failsafe image!")

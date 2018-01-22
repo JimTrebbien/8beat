@@ -13,6 +13,7 @@ class EightBeat(Gtk.Application):
     # Main initialization routine
     def __init__(self, application_id, flags):
         Gtk.Application.__init__(self, application_id=application_id, flags=flags)
+        #self.set_title("8 Beat Radio")
         Config().startup()
         self.connect("activate", self.new_window)
 
@@ -20,6 +21,8 @@ class EightBeat(Gtk.Application):
 
     def new_window(self, *args):
         MainWindow(self)
+
+
 
 
 # Starter
