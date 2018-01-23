@@ -2,7 +2,7 @@
 
 GTK3 application for finding and listening to free online radio stations around the world.
 
-![alt text](https://raw.githubusercontent.com/JimTrebbien/8beat/master/ui/icon_256_2.png)
+![8 Beat Radio icon](https://raw.githubusercontent.com/JimTrebbien/8beat/master/ui/icon_256_2.png)
 
 ## Getting Started
 
@@ -19,6 +19,9 @@ There is no release yet, for now you just download the project and run 8beat.py 
 * [radio-browser.info](http://www.radio-browser.info) - The radio-station webservice
 * [TinyDB](http://tinydb.readthedocs.io/en/latest/) - Local data storage
 
+## Screenshot
+
+![Screenshot with dark theme](https://s13.postimg.org/xrhlm1jyv/screenshot.png)
 
 ## Authors
 
