@@ -21,7 +21,7 @@ There is no release yet, for now you just download the project and run 8beat.py 
 
 ## Screenshot
 
-![Screenshot with dark theme](https://s13.postimg.org/xrhlm1jyv/screenshot.png)
+![Screenshot with dark theme](https://s20.postimg.org/xevod7ye5/screenshot.png)
 
 ## Authors
 
