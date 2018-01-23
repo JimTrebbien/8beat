@@ -2,7 +2,7 @@
 
 GTK3 application for finding and listening to free online radio stations around the world.
 
-![alt text](https://raw.githubusercontent.com/JimTrebbien/8beat/master/ui/icon_512_2.png)
+![alt text](https://raw.githubusercontent.com/JimTrebbien/8beat/master/ui/icon_256_2.png)
 
 ## Getting Started
 
