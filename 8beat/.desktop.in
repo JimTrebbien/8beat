@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=8 Beat Radio
+Comment=Find and listen to free online radio
+Exec=@prefix@/bin/8beat
+Icon=8beat
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Utility;
