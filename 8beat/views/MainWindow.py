@@ -126,18 +126,19 @@ class MainWindow(Gtk.ApplicationWindow):
             height = 92 #should be set in settings
             if ".pls" not in url:
                 try:
-                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), id),
+                                                                    width, height)
                 except:
-                    self.showNotification("Error loading failsafe image!")
-
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
+                    StationThumbnailDownloader(self, id, True).go(favicon)
                 try:
                     self.newSearchStationsListStore.append([pixbuf, name, id, url, web, favicon, country, tags, votes, codec])
                 except:
                     print("den virkede ikke")
 
         #print("der er " + str(len(self.newSearchStationsListStore)) + " stationer i liststore")
-        for icon in self.newSearchStationsListStore:
-            StationThumbnailDownloader(self, icon[2], True).go(icon[5])
+        #for icon in self.newSearchStationsListStore:
+            #StationThumbnailDownloader(self, icon[2], True).go(icon[5])
         self.iconViewSpinner.stop()
 
     def changeThumbnail(self, stationId, newSearch):
@@ -244,6 +245,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
 
     def fill_saved_station_list(self, widget):
+        self.newSearchStationsListStore.clear()
         content = Config().get_saved_stations()
         #js = content[0].decode("utf-8")
         #data = json.loads(js)
@@ -267,14 +269,13 @@ class MainWindow(Gtk.ApplicationWindow):
             print(name)
 
             try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), sid),
+                                                                width, height)
             except:
-                pass
-                #self.showNotification("Error loading failsafe image!")
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
 
             try:
                 self.savedStationsListStore.append([pixbuf, name, sid, url, web, favicon, country, tags, votes, codec])
-                #print("added: " + name)
             except:
                 print("den virkede ikke")
 
