@@ -1,3 +1,4 @@
+import ast
 import os
 import json
 import os.path
@@ -123,15 +124,16 @@ class MainWindow(Gtk.ApplicationWindow):
             codec = station['codec']
             width = 92  #should be set in settings
             height = 92 #should be set in settings
-            try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
-            except:
-                self.showNotification("Error loading failsafe image!")
+            if ".pls" not in url:
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
+                except:
+                    self.showNotification("Error loading failsafe image!")
 
-            try:
-                self.newSearchStationsListStore.append([pixbuf, name, id, url, web, favicon, country, tags, votes, codec])
-            except:
-                print("den virkede ikke")
+                try:
+                    self.newSearchStationsListStore.append([pixbuf, name, id, url, web, favicon, country, tags, votes, codec])
+                except:
+                    print("den virkede ikke")
 
         #print("der er " + str(len(self.newSearchStationsListStore)) + " stationer i liststore")
         for icon in self.newSearchStationsListStore:
@@ -242,17 +244,17 @@ class MainWindow(Gtk.ApplicationWindow):
 
 
     def fill_saved_station_list(self, widget):
-        self.savedStationsListStore.clear()
         content = Config().get_saved_stations()
         #js = content[0].decode("utf-8")
         #data = json.loads(js)
         #print(content)
 
         for station in content:
-            data = json.loads(str(station).replace("\'", "\""))
+            data = json.loads(str(station).replace("\'", "\"").replace("\\", "\\\\" ))
             #data = json.loads(str(station))
-            id = data['id']
-            name = data['name']
+            #data = ast.literal_eval(station)
+            sid = data['id']
+            name = data['name'].replace('\\xa0', ' ') #to get rid of an anoying space encoding
             url = data['url']
             favicon = data['favicon']
             web = data['homepage']
@@ -262,6 +264,7 @@ class MainWindow(Gtk.ApplicationWindow):
             codec = data['codec']
             width = 92  #should be set in settings
             height = 92 #should be set in settings
+            print(name)
 
             try:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size('../ui/icon_512_2.png', width, height)
@@ -270,7 +273,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 #self.showNotification("Error loading failsafe image!")
 
             try:
-                self.savedStationsListStore.append([pixbuf, name, id, url, web, favicon, country, tags, votes, codec])
+                self.savedStationsListStore.append([pixbuf, name, sid, url, web, favicon, country, tags, votes, codec])
                 #print("added: " + name)
             except:
                 print("den virkede ikke")
