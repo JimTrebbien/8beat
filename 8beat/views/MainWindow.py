@@ -124,7 +124,7 @@ class MainWindow(Gtk.ApplicationWindow):
             codec = station['codec']
             width = 92  #should be set in settings
             height = 92 #should be set in settings
-            if ".pls" not in url:
+            if ".pls" not in url and station['lastcheckok'] != "0":  #exclude pls and broken stations
                 try:
                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), id),
                                                                     width, height)
@@ -266,7 +266,6 @@ class MainWindow(Gtk.ApplicationWindow):
             codec = data['codec']
             width = 92  #should be set in settings
             height = 92 #should be set in settings
-            print(name)
 
             try:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(Config().get_cache_folder(), sid),
