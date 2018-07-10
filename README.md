@@ -29,7 +29,7 @@ There is no release yet, for now you just download the project and run 8beat.py 
 
 ## License
 
-GNU General Public License, Version 3 - see the [LICENSE.md](LICENSE.md) file for details
+GNU General Public License, Version 3 - see the [LICENSE.md](https://raw.githubusercontent.com/JimTrebbien/8beat/master/LICENSE) file for details
 
 
 
